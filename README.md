@@ -2,8 +2,8 @@
 
 A simple and interactive weather application that provides real-time weather updates for any city or your current location.
 
-![App Screenshot](images/screenshot.png)
-![App Screenshot 2](images/screenshot2.png)
+![App Screenshot](images/Screenshot1.png)
+![App Screenshot 2](images/Screenshot2.png)
 
 ## Features
 
@@ -28,4 +28,4 @@ A simple and interactive weather application that provides real-time weather upd
 
 ## Note
 
-This project uses API keys for OpenWeatherMap. Ensure you have a valid internet connection for the API requests to work.
+This project uses API keys for OpenWeatherMap. Ensure you have a valid internet connection and Your system's location feature is turned on for the API requests to work.
