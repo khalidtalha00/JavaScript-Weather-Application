@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWeatherApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+    <h1 id="title">MyWeatherApp</h1>                             
+    <div class="get-input">
+        <input id="inp" type="text" placeholder="Enter a City">
+        <div class="logo-container" onclick="handleLocationClick()"><img  id="location-logo" src="images/location-pin.svg" alt="location-logo" ></div>
+    </div>
+    <button id="btn" onclick="handleClick()">Search</button>
+
+    <p id="displayError"></p>
+    <div class="content">
+        <h1 id="city"></h1>
+        <p id="temp"></p>
+        <p id="weather"></p>
+    </div>
+
+    </div>
+    <script src="script.js"></script>
+    
+</body>
+</html>
