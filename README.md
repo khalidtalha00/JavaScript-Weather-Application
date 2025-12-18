@@ -6,6 +6,7 @@ A simple and interactive weather application that provides real-time weather upd
 
 - **Search by City**: Enter a city name to get current weather details.
     ![App Screenshot 1](screenshots/screenshot1.png)
+    
 - **Geolocation Support**: Use the location pin icon to fetch weather for your current location.
 
     ![App Screenshot 4](screenshots/screenshot4.png)
