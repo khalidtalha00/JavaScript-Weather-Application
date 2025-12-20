@@ -2,6 +2,7 @@ const apikey = "79905c1a250b4717409358103745e480";
 const city = document.querySelector("#city");
 const temp = document.querySelector("#temp");
 const weather = document.querySelector("#weather");
+const humidity = document.querySelector("#humidity");
 const displayError = document.querySelector("#displayError");
 
 const weatherImages = {
@@ -15,6 +16,41 @@ const weatherImages = {
   cloudy: "images/cloudy.jpg",
   rain: "images/rain.png",
 };
+function getWeatherEmoji(weather) {
+  let emj = "";
+  switch (weather.toLowerCase()) {
+    case "clear":
+      emj = "☀️";
+      break;
+    case "clouds":
+      emj = "☁️";
+      break;
+    case "fog":
+      emj = "🌁";
+      break;
+    case "mist":
+      emj = "♒";
+      break;
+    case "haze":
+      emj = "🌁";
+      break;
+    case "smoke":
+      emj = "😶‍🌫️";
+      break;
+    case "sunny":
+      emj = "☀️";
+      break;
+    case "cloudy":
+      emj = "☁️";
+      break;
+    case "rain":
+      emj = "🌧️";
+      break;
+    default:
+      emj = "❓";
+  }
+  return emj;
+}
 
 const content = document.querySelector(".content");
 
@@ -33,8 +69,12 @@ function changeWallpaper(weather) {
   }
 }
 
-async function getWeatherData(cityName) {
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apikey}&units=metric`;
+async function getWeatherData(cityName, country) {
+  let query = cityName;
+  if (country) {
+    query = `${cityName},${country}`;
+  }
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${apikey}&units=metric`;
 
   try {
     const response = await fetch(apiUrl);
@@ -42,10 +82,11 @@ async function getWeatherData(cityName) {
       throw new Error("City not found");
     }
     const data = await response.json();
-
-    city.innerHTML = data.name;
-    temp.innerHTML = Math.round(data.main.temp) + "°C";
-    weather.innerHTML = data.weather[0].main;
+    const emoji = getWeatherEmoji(data.weather[0].main);
+    city.innerHTML = data.name + ", " + data.sys.country;
+    temp.innerHTML = "🌡️ " + Math.round(data.main.temp) + "°C";
+    weather.innerHTML = emoji + " " + data.weather[0].main;
+    humidity.innerHTML = "♒ " + data.main.humidity + "% humidity";
 
     displayError.textContent = "";
     content.style.display = "block";
@@ -74,6 +115,10 @@ function handleClick() {
     alert("Please enter a city name to continue");
   }
 }
+function handleLocationClick() {
+  getCityPosition();
+}
+
 
 function getCityPosition() {
   if (navigator.geolocation) {
@@ -86,23 +131,23 @@ function getCityPosition() {
 function successCallback(position) {
   const latitude = position.coords.latitude;
   const longitude = position.coords.longitude;
-  console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+  
   getCityName(latitude, longitude);
 }
 
 function errorCallback(error) {
   switch (error.code) {
     case error.PERMISSION_DENIED:
-      console.error("User denied the request for Geolocation.");
+      alert("User denied the request for Geolocation.");
       break;
     case error.POSITION_UNAVAILABLE:
-      console.error("Location information is unavailable.");
+      alert("Location information is unavailable.");
       break;
     case error.TIMEOUT:
-      console.error("The request to get user location timed out.");
+      alert("The request to get user location timed out.");
       break;
     case error.UNKNOWN_ERROR:
-      console.error("An unknown error occurred.");
+      alert("An unknown error occurred.");
       break;
   }
 }
@@ -115,16 +160,11 @@ function getCityName(latitude, longitude) {
     .then((response) => response.json())
     .then((data) => {
       const cityName = data.city || data.locality;
-      const country = data.countryName;
-      console.log(`User is likely in: ${cityName}, ${country}`);
-
-      getWeatherData(cityName);
+      const country = data.countryCode;
+      getWeatherData(cityName, country);
     })
     .catch((error) => {
       console.error("Error with reverse geocoding API:", error);
     });
 }
 
-function handleLocationClick() {
-  getCityPosition();
-}
