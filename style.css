@@ -1,7 +1,7 @@
 body{
-    background: #000046;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #1CB5E0, #000046);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #1CB5E0, #000046); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: #000046;
+    background: -webkit-linear-gradient(to right, #1CB5E0, #000046); 
+    background: linear-gradient(to right, #1CB5E0, #000046);
     font-family: Roboto , sans-serif;
 
 
@@ -20,7 +20,7 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.4);
     width: 400px;
     padding: 20px;
     margin: 0 auto;
@@ -40,11 +40,16 @@ body{
 
 #inp{
     width: 80%;
-    height: 25px;
+    height: 30px;
     border: none;
     border-radius: 10px;
-    background-color: hsl(0, 0%, 100%);    
+    background-color: hsl(0, 0%, 100%);
+    border: 2px solid hsl(0, 0%, 70%);    
 }
+#title{
+    color: hsl(240, 67%, 35%);
+}
+
 
 #inp:hover{
     background-color: hsl(0, 0%, 90%);
@@ -62,7 +67,7 @@ body{
     width: 32px;
     height: 32px;
     border-radius: 10px;
-    border: 1px solid gray;
+    border: 2px solid hsl(0, 0%, 70%);
 }
 
 .logo-container:hover{
@@ -81,14 +86,16 @@ body{
 }
 
 #btn{
-    background-color: hsl(211, 100%, 50%);
+    background-color:hsl(240, 67%, 60%);
+    font-weight: bold;
     border: none;
+    color: white;
     padding: 7px 10px;
     border-radius: 10px;
 
 }
 #btn:hover{
-    background-color:hsl(211, 100%, 45%) ;
+    background-color:hsl(240, 67%, 50%) ;
 }
 
 .content{
@@ -103,4 +110,21 @@ body{
     color: hsl(0, 100%, 55%);
     font-weight: bold;
 }
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 

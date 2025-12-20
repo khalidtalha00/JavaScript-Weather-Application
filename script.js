@@ -4,6 +4,7 @@ const temp = document.querySelector("#temp");
 const weather = document.querySelector("#weather");
 const humidity = document.querySelector("#humidity");
 const displayError = document.querySelector("#displayError");
+const loader = document.querySelector("#loader");
 
 const weatherImages = {
   clear: "images/clear.jpg",
@@ -70,6 +71,10 @@ function changeWallpaper(weather) {
 }
 
 async function getWeatherData(cityName, country) {
+  loader.style.display = "block";
+  content.style.display = "none";
+  displayError.textContent = "";
+  
   let query = cityName;
   if (country) {
     query = `${cityName},${country}`;
@@ -95,6 +100,8 @@ async function getWeatherData(cityName, country) {
     content.style.display = "none";
     displayError.textContent = `${error}`;
     displayError.style.color = "red";
+  } finally {
+    loader.style.display = "none";
   }
 }
 
@@ -116,6 +123,9 @@ function handleClick() {
   }
 }
 function handleLocationClick() {
+  loader.style.display = "block";
+  content.style.display = "none";
+  displayError.textContent = "";
   getCityPosition();
 }
 
@@ -136,6 +146,7 @@ function successCallback(position) {
 }
 
 function errorCallback(error) {
+  loader.style.display = "none";
   switch (error.code) {
     case error.PERMISSION_DENIED:
       alert("User denied the request for Geolocation.");
@@ -164,6 +175,7 @@ function getCityName(latitude, longitude) {
       getWeatherData(cityName, country);
     })
     .catch((error) => {
+      loader.style.display = "none";
       console.error("Error with reverse geocoding API:", error);
     });
 }
