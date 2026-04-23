@@ -74,7 +74,7 @@ async function getWeatherData(cityName, country) {
   loader.style.display = "block";
   content.style.display = "none";
   displayError.textContent = "";
-  
+
   let query = cityName;
   if (country) {
     query = `${cityName},${country}`;
@@ -96,6 +96,9 @@ async function getWeatherData(cityName, country) {
     displayError.textContent = "";
     content.style.display = "block";
     changeWallpaper(data.weather[0].main.toLowerCase());
+
+    // start/refresh local weather-news feed
+    startNewsAutoRefresh(data.name, data.sys.country);
   } catch (error) {
     content.style.display = "none";
     displayError.textContent = `${error}`;
@@ -178,5 +181,103 @@ function getCityName(latitude, longitude) {
       loader.style.display = "none";
       console.error("Error with reverse geocoding API:", error);
     });
+}
+
+const THEME_KEY = "clarityweather-theme";
+
+function applyTheme(theme) {
+  const isDark = theme === "dark";
+  document.body.classList.toggle("dark-theme", isDark);
+
+  const btn = document.getElementById("themeToggle");
+  if (btn) {
+    btn.textContent = isDark ? "☀️" : "🌙";
+    btn.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+  }
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+  applyTheme(savedTheme);
+}
+
+function toggleTheme() {
+  const nextTheme = document.body.classList.contains("dark-theme") ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, nextTheme);
+  applyTheme(nextTheme);
+}
+
+window.toggleTheme = toggleTheme;
+initTheme();
+
+const newsLeft = document.getElementById("newsLeft");
+const newsRight = document.getElementById("newsRight");
+const NEWS_REFRESH_MS = 10 * 60 * 1000;
+let newsIntervalId = null;
+
+function setNewsMessage(message) {
+  if (newsLeft) newsLeft.innerHTML = `<li>${message}</li>`;
+  if (newsRight) newsRight.innerHTML = `<li>${message}</li>`;
+}
+
+function renderNews(items) {
+  const safeItems = items.slice(0, 12);
+  const leftItems = safeItems.filter((_, i) => i % 2 === 0);
+  const rightItems = safeItems.filter((_, i) => i % 2 !== 0);
+
+  const makeHtml = (arr) =>
+    arr.length
+      ? arr
+          .map(
+            (n) => `
+            <li>
+              <a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a>
+              <div style="opacity:.8;font-size:.75rem;margin-top:4px;">${n.source || "Unknown source"}</div>
+            </li>`
+          )
+          .join("")
+      : "<li>No recent weather news found.</li>";
+
+  if (newsLeft) newsLeft.innerHTML = makeHtml(leftItems);
+  if (newsRight) newsRight.innerHTML = makeHtml(rightItems);
+}
+
+async function fetchWeatherNews(cityName, countryCode) {
+  if (!cityName) return;
+
+  setNewsMessage("Loading nearby weather news...");
+
+  const query = encodeURIComponent(`(weather OR storm OR flood OR heatwave) AND ${cityName} ${countryCode || ""}`);
+  const newsUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${query}&mode=ArtList&maxrecords=20&format=json&sort=DateDesc`;
+
+  try {
+    const response = await fetch(newsUrl);
+    if (!response.ok) throw new Error("News request failed");
+
+    const data = await response.json();
+    const articles = (data.articles || []).map((a) => ({
+      title: a.title || "Untitled",
+      url: a.url,
+      source: a.sourceCommonName || a.domain
+    }))
+    .filter((a) => a.url);
+
+    renderNews(articles);
+  } catch (err) {
+    setNewsMessage("Could not load weather news right now.");
+    console.error("Weather news error:", err);
+  }
+}
+
+function startNewsAutoRefresh(cityName, countryCode) {
+  if (newsIntervalId) clearInterval(newsIntervalId);
+
+  fetchWeatherNews(cityName, countryCode);
+  newsIntervalId = setInterval(() => {
+    fetchWeatherNews(cityName, countryCode);
+  }, NEWS_REFRESH_MS);
 }
 
