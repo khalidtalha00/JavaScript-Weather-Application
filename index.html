@@ -3,41 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClarityWeather</title>
+    <meta name="description" content="ClarityWeather — Beautiful real-time weather forecasts with local news. Search any city or use your location.">
+    <title>ClarityWeather — Real-Time Weather</title>
     <link rel="icon" href="images/sunshineicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-    <div class="header-container">
-        <h1 id="title">ClarityWeather</h1>
-        <img src="images/sunshineicon.png" id="logo-img" alt="Logo">
-        <button id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to dark mode">🌙</button>
-    </div>                             
-    <div class="get-input">
-        <input id="inp" type="text" placeholder="Enter a City">
-        <div class="logo-container" onclick="handleLocationClick()"><img  id="location-logo" src="images/location-pin.svg" alt="location-logo" ></div>
+    <!-- Animated background orbs -->
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+    <div class="orb orb-3" aria-hidden="true"></div>
+
+    <!-- News sidebars -->
+    <aside class="news-sidebar left-sidebar" id="leftSidebar" aria-label="Local weather news (left)">
+        <h3>📰 Weather News</h3>
+        <ul class="news-list" id="newsLeft"></ul>
+    </aside>
+
+    <aside class="news-sidebar right-sidebar" id="rightSidebar" aria-label="Local weather news (right)">
+        <h3>🌐 More Stories</h3>
+        <ul class="news-list" id="newsRight"></ul>
+    </aside>
+
+    <!-- Main card -->
+    <div class="container" role="main">
+
+        <!-- Header -->
+        <div class="header-container">
+            <img src="images/sunshineicon.png" id="logo-img" alt="ClarityWeather Logo">
+            <h1 id="title">ClarityWeather</h1>
+            <button id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Switch to dark mode">🌙</button>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <!-- Search row -->
+        <div class="get-input" role="search">
+            <input
+                id="inp"
+                type="text"
+                placeholder="Search a city…"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="City name"
+            >
+            <div
+                class="logo-container"
+                onclick="handleLocationClick()"
+                role="button"
+                tabindex="0"
+                aria-label="Use my location"
+                onkeydown="if(event.key==='Enter'||event.key===' ')handleLocationClick()"
+            >
+                <img id="location-logo" src="images/location-pin.svg" alt="Location">
+            </div>
+        </div>
+
+        <!-- Search button -->
+        <button id="btn" onclick="handleClick()" aria-label="Search weather">
+            🔍&nbsp; Search Weather
+        </button>
+
+        <!-- Loader -->
+        <div id="loader" class="loader" role="status" aria-label="Loading weather data"></div>
+
+        <!-- Error message -->
+        <p id="displayError" role="alert"></p>
+
+        <!-- Weather result -->
+        <div class="content" id="weatherContent" aria-live="polite">
+            <h2 id="city"></h2>
+            <p id="temp"></p>
+            <p id="weather"></p>
+            <p id="humidity"></p>
+        </div>
+
     </div>
-    <button id="btn" onclick="handleClick()">Search</button>
 
-    <div id="loader" class="loader"></div>
+    <footer>
+        Made with ❤️ by <span>Talha Khalid</span>
+    </footer>
 
-    <p id="displayError"></p>
-    <div class="content">
-        <h1 id="city"></h1>
-        <p id="temp"></p>
-        <p id="weather"></p>
-        <p id="humidity"></p>
-    </div>
-
-    </div>
-
-    <footer> Made by Talha Khalid</footer>
     <script src="script.js"></script>
-    
 </body>
 </html>

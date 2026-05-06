@@ -94,15 +94,19 @@ async function getWeatherData(cityName, country) {
     humidity.innerHTML = "♒ " + data.main.humidity + "% humidity";
 
     displayError.textContent = "";
-    content.style.display = "block";
+    // Re-trigger entrance animation
+    content.style.animation = "none";
+    content.style.display = "flex";
+    requestAnimationFrame(() => {
+      content.style.animation = "";
+    });
     changeWallpaper(data.weather[0].main.toLowerCase());
 
     // start/refresh local weather-news feed
     startNewsAutoRefresh(data.name, data.sys.country);
   } catch (error) {
     content.style.display = "none";
-    displayError.textContent = `${error}`;
-    displayError.style.color = "red";
+    displayError.textContent = "City not found. Please check the spelling and try again.";
   } finally {
     loader.style.display = "none";
   }
@@ -186,26 +190,26 @@ function getCityName(latitude, longitude) {
 const THEME_KEY = "clarityweather-theme";
 
 function applyTheme(theme) {
-  const isDark = theme === "dark";
-  document.body.classList.toggle("dark-theme", isDark);
+  const isLight = theme === "light";
+  document.body.classList.toggle("light-theme", isLight);
 
   const btn = document.getElementById("themeToggle");
   if (btn) {
-    btn.textContent = isDark ? "☀️" : "🌙";
+    btn.textContent = isLight ? "🌙" : "☀️";
     btn.setAttribute(
       "aria-label",
-      isDark ? "Switch to light mode" : "Switch to dark mode"
+      isLight ? "Switch to dark mode" : "Switch to light mode"
     );
   }
 }
 
 function initTheme() {
-  const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+  const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
   applyTheme(savedTheme);
 }
 
 function toggleTheme() {
-  const nextTheme = document.body.classList.contains("dark-theme") ? "light" : "dark";
+  const nextTheme = document.body.classList.contains("light-theme") ? "dark" : "light";
   localStorage.setItem(THEME_KEY, nextTheme);
   applyTheme(nextTheme);
 }
@@ -250,12 +254,19 @@ async function fetchWeatherNews(cityName, countryCode) {
 
   setNewsMessage("Loading nearby weather news...");
 
-  const query = encodeURIComponent(`(weather OR storm OR flood OR heatwave) AND ${cityName} ${countryCode || ""}`);
+  // Simplify the search query to avoid GDELT query parser errors
+  const query = encodeURIComponent(`"${cityName}" weather`);
   const newsUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${query}&mode=ArtList&maxrecords=20&format=json&sort=DateDesc`;
 
   try {
     const response = await fetch(newsUrl);
     if (!response.ok) throw new Error("News request failed");
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      throw new Error(`News API returned non-JSON response: ${text.substring(0, 30)}...`);
+    }
 
     const data = await response.json();
     const articles = (data.articles || []).map((a) => ({
